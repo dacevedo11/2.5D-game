@@ -3,24 +3,40 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    public float moveSpeed = 5f; // Adjust the player's movement speed
+    public float moveSpeed = 5f;
+    public float jumpForce = 5f;
+    public Transform groundCheck;
+    public LayerMask groundLayer;
+
     private Vector2 moveInput;
-    private Rigidbody2D rb;
+    private Rigidbody rb;
+    private bool isGrounded;
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody2D>(); // Ensure the player has a Rigidbody2D component
+        rb = GetComponent<Rigidbody>();
     }
 
-    // Input system method triggered by the "Move" action
     public void OnMove(InputAction.CallbackContext context)
     {
-        moveInput = context.ReadValue<Vector2>(); // Get the movement vector from input
+        moveInput = context.ReadValue<Vector2>();
+    }
+
+    public void OnJump(InputAction.CallbackContext context)
+    {
+        // Allow jump if the jump button is pressed and the player is grounded
+        if (context.performed && isGrounded)
+        {
+            rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.z);  // Apply jump force on Y-axis
+        }
     }
 
     private void FixedUpdate()
     {
-        // Horizontal movement only (left/right)
-        rb.velocity = new Vector2(moveInput.x * moveSpeed, rb.velocity.y);
+        // Move the player on the X-axis using Vector3 to account for 3D space
+        rb.velocity = new Vector3(moveInput.x * moveSpeed, rb.velocity.y, rb.velocity.z);
+
+        // Grounded check using Physics.CheckSphere
+        isGrounded = Physics.CheckSphere(groundCheck.position, 0.1f, groundLayer);
     }
 }
