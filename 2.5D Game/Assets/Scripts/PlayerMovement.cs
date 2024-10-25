@@ -11,6 +11,9 @@ public class PlayerController : MonoBehaviour
     private Vector2 moveInput;
     private Rigidbody rb;
     private bool isGrounded;
+    private bool isWalking;
+
+    public Animator animator;
 
     private void Awake()
     {
@@ -38,5 +41,22 @@ public class PlayerController : MonoBehaviour
 
         // Grounded check using Physics.CheckSphere
         isGrounded = Physics.CheckSphere(groundCheck.position, 0.1f, groundLayer);
+
+        isWalking = moveInput.x != 0;
+        animator.SetBool("isWalking", isWalking);
+
+        // Set IsJumping based on grounded state
+        animator.SetBool("isJumping", !isGrounded);
+
+
+        // Flip the player's direction based on movement
+        if (moveInput.x > 0)
+        {
+            transform.localScale = new Vector3(1, 1, 1);  // Facing right
+        }
+        else if (moveInput.x < 0)
+        {
+            transform.localScale = new Vector3(-1, 1, 1);  // Facing left
+        } 
     }
 }
