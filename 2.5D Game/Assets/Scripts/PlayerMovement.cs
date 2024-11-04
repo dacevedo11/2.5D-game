@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
     private bool isGrounded;
     private bool isWalking;
+    private bool isBlocking;
 
     public Animator animator;
 
@@ -40,6 +41,15 @@ public class PlayerController : MonoBehaviour
         if (context.performed)
         {
             animator.SetTrigger("Attack");  // Trigger the Attack animation
+        }
+    }
+
+    public void OnBlock(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            isBlocking = true;
+            animator.SetBool("Block", isBlocking);  // Trigger the Block animation
         }
     }
 
