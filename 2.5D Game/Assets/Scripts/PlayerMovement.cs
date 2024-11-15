@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     public Transform groundCheck;
     public LayerMask groundLayer;
 
+    private AudioSource audioSource;
     private Vector2 moveInput;
     private Rigidbody rb;
     private bool isGrounded;
@@ -20,6 +21,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     public void OnMove(InputAction.CallbackContext context)
@@ -44,12 +46,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void OnBlock(InputAction.CallbackContext context)
+    public void OnBash(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
-            isBlocking = true;
-            animator.SetBool("Block", isBlocking);  // Trigger the Block animation
+            animator.SetTrigger("Bash");  // Trigger the Block animation
         }
     }
 
