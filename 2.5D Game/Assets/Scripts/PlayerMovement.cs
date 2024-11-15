@@ -1,8 +1,12 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    public Animator animator;
+
+    [Header("Player Movement Settings")]
     public float moveSpeed = 5f;
     public float jumpForce = 5f;
     public float climbSpeed = 3f;
@@ -15,8 +19,11 @@ public class PlayerController : MonoBehaviour
     private bool isGrounded;
     private bool isWalking;
     private bool isBlocking;
-
-    public Animator animator;
+    
+    [Header("Player Combat Settings")]
+    public Transform attackPoint;
+    public float attackRange = 0.5f;
+    public LayerMask enemyLayers;
 
     private void Awake()
     {
@@ -40,9 +47,19 @@ public class PlayerController : MonoBehaviour
 
     public void OnAttack(InputAction.CallbackContext context)
     {
+        // Play attack animation
         if (context.performed)
         {
             animator.SetTrigger("Attack");  // Trigger the Attack animation
+        }
+
+        // Detect enemies in range of attack
+        Collider[] hitEnemies = Physics.OverlapSphere(attackPoint.position, attackRange, enemyLayers);
+
+        // Damage enemies
+        foreach (Collider enemy in hitEnemies)
+        {
+            enemy.GetComponent<Dummy>().TakeDamage();
         }
     }
 
@@ -76,5 +93,13 @@ public class PlayerController : MonoBehaviour
         {
             transform.localScale = new Vector3(-1, 1, 1);  // Facing left
         }
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        if (attackPoint == null)
+            return;
+
+        Gizmos.DrawWireSphere(attackPoint.position, attackRange);
     }
 }
