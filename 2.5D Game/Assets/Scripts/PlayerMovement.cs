@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -33,6 +34,8 @@ public class PlayerController : MonoBehaviour
     public Transform attackPoint;
     public float attackRange = 0.5f;
     public LayerMask enemyLayers;
+    public float attackRate = 2f;
+    private float nextAttackTime = 0f;
 
     private void Awake()
     {
@@ -62,16 +65,25 @@ public class PlayerController : MonoBehaviour
 
     public void OnAttack(InputAction.CallbackContext context)
     {
-        // Play attack animation
-        if (context.performed)
+        if (Time.time >= nextAttackTime)
         {
-            animator.SetTrigger("Attack");  // Trigger the Attack animation
-
-            // Play attack sound
-            if (attackSound != null && audioSource != null)
+            if (context.performed)
             {
-                audioSource.PlayOneShot(attackSound);
+                HandleAttack();
+                nextAttackTime = Time.time + 1f / attackRate;
             }
+        }
+    }
+
+    private void HandleAttack()
+    {
+        // Trigger the Attack animation
+        animator.SetTrigger("Attack");
+
+        // Play attack sound
+        if (attackSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(attackSound);
         }
 
         // Detect enemies in range of attack
